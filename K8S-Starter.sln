@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ui", "ui\ui.csproj", "{409CC2E6-9338-4FC6-B6F2-804430196585}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastrcture", "infrastrcture", "{5CEA3D77-3223-4CBB-B124-5C874188DC20}"
+	ProjectSection(SolutionItems) = preProject
+		..\aws-fargate\infrastrcture\azure-pipelines.yml = ..\aws-fargate\infrastrcture\azure-pipelines.yml
+		infrastrcture\main.tf = infrastrcture\main.tf
+		..\aws-fargate\infrastrcture\outputs.tf = ..\aws-fargate\infrastrcture\outputs.tf
+		..\aws-fargate\infrastrcture\providers.tf = ..\aws-fargate\infrastrcture\providers.tf
+		..\aws-fargate\infrastrcture\variables.tf = ..\aws-fargate\infrastrcture\variables.tf
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{AAEC41D8-A6CB-4A30-9D65-E66B9AA17B8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "module", "module", "{2AC587A0-1139-4C5A-9CCA-557B7C2DA63D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{409CC2E6-9338-4FC6-B6F2-804430196585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{409CC2E6-9338-4FC6-B6F2-804430196585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{409CC2E6-9338-4FC6-B6F2-804430196585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{409CC2E6-9338-4FC6-B6F2-804430196585}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AAEC41D8-A6CB-4A30-9D65-E66B9AA17B8D} = {5CEA3D77-3223-4CBB-B124-5C874188DC20}
+		{2AC587A0-1139-4C5A-9CCA-557B7C2DA63D} = {AAEC41D8-A6CB-4A30-9D65-E66B9AA17B8D}
+	EndGlobalSection
+EndGlobal
