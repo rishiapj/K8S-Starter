@@ -7,7 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ui", "ui\ui.csproj", "{409C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastrcture", "infrastrcture", "{5CEA3D77-3223-4CBB-B124-5C874188DC20}"
 	ProjectSection(SolutionItems) = preProject
-		..\aws-fargate\infrastrcture\azure-pipelines.yml = ..\aws-fargate\infrastrcture\azure-pipelines.yml
 		infrastrcture\main.tf = infrastrcture\main.tf
 		..\aws-fargate\infrastrcture\outputs.tf = ..\aws-fargate\infrastrcture\outputs.tf
 		..\aws-fargate\infrastrcture\providers.tf = ..\aws-fargate\infrastrcture\providers.tf
