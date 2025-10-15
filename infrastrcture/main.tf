@@ -1,9 +1,13 @@
 
-# Create a VPC
 
+# VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
+
+  tags = {
+    Name = "eks-vpc"
+  }
 }
 
 resource "aws_subnet" "subnet_1" {
@@ -11,6 +15,10 @@ resource "aws_subnet" "subnet_1" {
   cidr_block              = "10.0.0.0/20"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "eks-subnet-1"
+  }
 }
 
 resource "aws_subnet" "subnet_2" {
@@ -18,6 +26,10 @@ resource "aws_subnet" "subnet_2" {
   cidr_block              = "10.0.16.0/20"
   availability_zone       = "us-east-1c"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "eks-subnet-2"
+  }
 }
 
 resource "aws_subnet" "subnet_3" {
@@ -25,24 +37,22 @@ resource "aws_subnet" "subnet_3" {
   cidr_block              = "10.0.32.0/20"
   availability_zone       = "us-east-1d"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "eks-subnet-3"
+  }
 }
 
 resource "aws_internet_gateway" "internet_gw" {
-  vpc_id                  = aws_vpc.main.id
-
-}
-
-
-resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 }
 
-resource "aws_route_table" "main" {
+resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
+    gateway_id = aws_internet_gateway.internet_gw.id
   }
 
   route {
@@ -51,30 +61,63 @@ resource "aws_route_table" "main" {
   }
 }
 
+resource "aws_route_table_association" "asubnet_1_association" {
+  subnet_id      = aws_subnet.subnet_1.id
+  route_table_id = aws_route_table.route_table.id
+}
 
-  module "eks" {
+resource "aws_route_table_association" "asubnet_2_association" {
+  subnet_id      = aws_subnet.subnet_2.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+resource "aws_route_table_association" "asubnet_3_association" {
+  subnet_id      = aws_subnet.subnet_3.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+
+module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "~> 21.0"
 
-  cluster_name    = "my-devops-project"
-  cluster_version = "1.27"
+  name               = "my-cluster-eks"
+  kubernetes_version = "1.33"
 
-  cluster_endpoint_public_access = true
+  # Optional
+  endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
 
   vpc_id                   = aws_vpc.main.id
   subnet_ids               = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
   control_plane_subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
 
-  eks_managed_node_groups = {
-    green = {
-      min_size       = 1
-      max_size       = 1
-      desired_size   = 1
-      instance_types = ["t3.medium"]
-    }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
   }
 }
 
+resource "aws_ecr_repository" "microservice_a" {
+  name = "microservice-a"
+}
 
+resource "aws_ecr_repository" "microservice_b" {
+  name = "microservice-b"
+}
 
-} 
+output "ecr_repository_url_microservice_a" {
+  value = aws_ecr_repository.microservice_a.repository_url
+}
+
+output "ecr_repository_url_microservice_b" {
+  value = aws_ecr_repository.microservice_b.repository_url
+}
