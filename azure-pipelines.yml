@@ -9,11 +9,7 @@ variables:
 - name: awsRegion
   value: 'us-east-1'
 
-- name: ecrUserServiceRepoName
-  value: 'microservice/userservice'
 
-- name: ecrProductServiceRepoName
-  value: 'microservice/productservice'
 
 - name: ecrClientRepoName
   value: 'microservice/client'
@@ -37,26 +33,10 @@ stages:
           - task: UseDotNet@2
             inputs:
               packageType: 'sdk'
-              version: '7.0.x'
+              version: '9.0.x'
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
-          # Restore and build .NET Core project
-          - script: |
-              echo "Restoring .NET for User Service project..."
-              dotnet restore 'UserService/UserMicroservice.csproj'
-
-              echo "Building .NET project..."
-              dotnet build UserService/UserMicroservice.csproj --configuration Release
-            displayName: 'Restore and Build .NET Core App'
-
-          - script: |
-              echo "Restoring .NET for Product Service project..."
-              dotnet restore 'ProductService/ProductMicroservice.csproj'
-
-              echo "Building .NET project Product Service..."
-              dotnet build ProductService/ProductMicroservice.csproj --configuration Release
-            displayName: 'Restore and Build .NET Core App'
-
+         
           - script: |
               echo "Restoring .NET for Product Service project..."
               dotnet restore 'Client/Client.csproj'
@@ -92,30 +72,15 @@ stages:
             displayName: 'List all files'
 
           # Build and push Docker image
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image to AWS ECR'
-            inputs:
-              command: buildAndPush
-              dockerfile: ./UserService/Dockerfile
-              repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrUserServiceRepoName)
-              tags: |
-                $(imageTag)
+    
+
 
 
           - task: Docker@2
             displayName: 'Build and Push Docker Image to AWS ECR'
             inputs:
               command: buildAndPush
-              dockerfile: ./ProductService/Dockerfile
-              repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrProductServiceRepoName)
-              tags: |
-                $(imageTag)
-
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image to AWS ECR'
-            inputs:
-              command: buildAndPush
-              dockerfile: ./ProductService/Dockerfile
+              dockerfile: ./Client/Dockerfile
               repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrClientRepoName)
               tags: |
                 $(imageTag)
