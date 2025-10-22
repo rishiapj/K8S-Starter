@@ -106,6 +106,10 @@ module "eks" {
   }
 }
 
+resource "aws_ecr_repository" "client_ui" {
+  name = "client_ui"
+}
+
 resource "aws_ecr_repository" "microservice_a" {
   name = "microservice-a"
 }
