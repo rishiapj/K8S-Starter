@@ -43,27 +43,13 @@ stages:
           # Restore and build .NET Core project
           - script: |
               echo "Restoring .NET for User Service project..."
-              dotnet restore 'UserService/UserMicroservice.csproj'
+              dotnet restore 'ui/ui.csproj'
 
               echo "Building .NET project..."
-              dotnet build UserService/UserMicroservice.csproj --configuration Release
+              dotnet build ui/ui.csproj --configuration Release
             displayName: 'Restore and Build .NET Core App'
 
-          - script: |
-              echo "Restoring .NET for Product Service project..."
-              dotnet restore 'ProductService/ProductMicroservice.csproj'
-
-              echo "Building .NET project Product Service..."
-              dotnet build ProductService/ProductMicroservice.csproj --configuration Release
-            displayName: 'Restore and Build .NET Core App'
-
-          - script: |
-              echo "Restoring .NET for Product Service project..."
-              dotnet restore 'Client/Client.csproj'
-
-              echo "Building .NET project Product Service..."
-              dotnet build Client/Client.csproj --configuration Release
-
+         
           # Install AWS CLI and configure credentials
           - script: |
               echo "Installing unzip..."
@@ -96,7 +82,7 @@ stages:
             displayName: 'Build and Push Docker Image to AWS ECR'
             inputs:
               command: buildAndPush
-              dockerfile: ./UserService/Dockerfile
+              dockerfile: ./ui/Dockerfile
               repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrUserServiceRepoName)
               tags: |
                 $(imageTag)
@@ -115,7 +101,7 @@ stages:
             displayName: 'Build and Push Docker Image to AWS ECR'
             inputs:
               command: buildAndPush
-              dockerfile: ./ProductService/Dockerfile
+              dockerfile: ./ui/Dockerfile
               repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrClientRepoName)
               tags: |
                 $(imageTag)
