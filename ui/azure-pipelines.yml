@@ -31,7 +31,7 @@ stages:
           - task: UseDotNet@2
             inputs:
               packageType: 'sdk'
-              version: '7.0.x'
+              version: '9.0.x'
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           # Restore and build .NET Core project
