@@ -10,13 +10,7 @@ variables:
   value: 'us-east-1'
 
 - name: ecrUserServiceRepoName
-  value: 'microservice/userservice'
-
-- name: ecrProductServiceRepoName
-  value: 'microservice/productservice'
-
-- name: ecrClientRepoName
-  value: 'microservice/client'
+  value: 'microservice/ui'
 
 - name: imageTag
   value: 'latest'
