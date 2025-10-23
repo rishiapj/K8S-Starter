@@ -3,7 +3,7 @@
     }
 
     resource "aws_s3_bucket" "s3_bucket" {
-      bucket = "rishi-terraform-bucket" # Choose a globally unique name
+      bucket = "rishi-terraform-bucket-985809756777" # Choose a globally unique name
 
       tags = {
         Name        = "Terraform State Bucket"
