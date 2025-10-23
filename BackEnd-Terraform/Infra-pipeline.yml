@@ -13,7 +13,7 @@ variables:
 
 stages:
 - stage: TerraformDeploy
-  displayName: 'Deploy AWS EKS using Terraform'
+  displayName: 'Terraform TFState File Creation'
   jobs:
   - job: DeployEKS
     steps:
