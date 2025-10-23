@@ -83,8 +83,7 @@ module "eks" {
 
   endpoint_public_access                  = true
   enable_cluster_creator_admin_permissions = true
-
-  # Removed encryption_config block → AWS-managed encryption will be used
+  # Removed encryption_config → AWS-managed encryption will be used
 
   compute_config = {
     enabled    = true
