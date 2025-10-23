@@ -1,121 +1,50 @@
 trigger:
-  branches:
-    include:
-      - main
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
 - group: microservice-library
 
+
 - name: awsRegion
   value: 'us-east-1'
 
-- name: ecrUserServiceRepoName
-  value: 'microservice/userservice'
-
-- name: ecrProductServiceRepoName
-  value: 'microservice/productservice'
-
-- name: ecrClientRepoName
-  value: 'microservice/client'
-
-- name: imageTag
-  value: 'latest'
-
-- name: awsAccountId
-  value: '985809756777'
-
-
 stages:
-  - stage: BuildAndPush
-    jobs:
-      - job: PushToECR
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
+- stage: TerraformDeploy
+  displayName: 'Deploy AWS EKS using Terraform'
+  jobs:
+  - job: DeployEKS
+    steps:
+    # Install Terraform
+    - script: |
+        sudo apt-get update && sudo apt-get install -y unzip
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install terraform -y
+      displayName: 'Install Terraform'
 
-          # Use .NET SDK
-          - task: UseDotNet@2
-            inputs:
-              packageType: 'sdk'
-              version: '7.0.x'
-              installationPath: $(Agent.ToolsDirectory)/dotnet
+    # Export AWS credentials securely
+    - script: |
+        export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+        export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
+        export AWS_DEFAULT_REGION=$(awsRegion)
+        aws sts get-caller-identity
+      displayName: 'Set AWS Credentials'
 
-          # Restore and build .NET Core project
-          - script: |
-              echo "Restoring .NET for User Service project..."
-              dotnet restore 'UserService/UserMicroservice.csproj'
+    # Terraform Init
+    - script: terraform init
+      workingDirectory: 'BackEnd-Terraform'
+      displayName: 'Terraform Init'
 
-              echo "Building .NET project..."
-              dotnet build UserService/UserMicroservice.csproj --configuration Release
-            displayName: 'Restore and Build .NET Core App'
+    # Terraform Plan
+    - script: terraform plan -out=tfplan
+      workingDirectory: 'infrastrcture'
+      displayName: 'Terraform Plan'
 
-          - script: |
-              echo "Restoring .NET for Product Service project..."
-              dotnet restore 'ProductService/ProductMicroservice.csproj'
-
-              echo "Building .NET project Product Service..."
-              dotnet build ProductService/ProductMicroservice.csproj --configuration Release
-            displayName: 'Restore and Build .NET Core App'
-
-          - script: |
-              echo "Restoring .NET for Product Service project..."
-              dotnet restore 'Client/Client.csproj'
-
-              echo "Building .NET project Product Service..."
-              dotnet build Client/Client.csproj --configuration Release
-
-          # Install AWS CLI and configure credentials
-          - script: |
-              echo "Installing unzip..."
-              sudo apt-get update && sudo apt-get install -y unzip
-
-              echo "Installing AWS CLI..."
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip
-              sudo ./aws/install
-
-              echo "Configuring AWS credentials..."
-              aws configure set aws_access_key_id $(awsAccessKeyId)
-              aws configure set aws_secret_access_key $(awsSecretAccessKey)
-              aws configure set default.region $(awsRegion)
-
-              echo "Logging in to AWS ECR..."
-              echo "The value of my variable is $awsAccessKeyId"
-              echo "Access awsSecretAccessKey is $awsSecretAccessKey"
-
-              aws ecr get-login-password --region $(awsRegion) | docker login --username AWS --password-stdin $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com
-            displayName: 'Install AWS CLI and Login to ECR'
-            env:
-              awsAccessKeyId: $(awsAccessKeyId)
-              awsSecretAccessKey: $(awsSecretAccessKey)
-          - script: ls -R
-            displayName: 'List all files'
-
-          # Build and push Docker image
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image to AWS ECR'
-            inputs:
-              command: buildAndPush
-              dockerfile: ./UserService/Dockerfile
-              repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrUserServiceRepoName)
-              tags: |
-                $(imageTag)
-
-
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image to AWS ECR'
-            inputs:
-              command: buildAndPush
-              dockerfile: ./ProductService/Dockerfile
-              repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrProductServiceRepoName)
-              tags: |
-                $(imageTag)
-
-          - task: Docker@2
-            displayName: 'Build and Push Docker Image to AWS ECR'
-            inputs:
-              command: buildAndPush
-              dockerfile: ./ProductService/Dockerfile
-              repository: $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com/$(ecrClientRepoName)
-              tags: |
-                $(imageTag)
+    # Terraform Apply
+    - script: terraform apply -auto-approve tfplan
+      workingDirectory: 'infrastrcture'
+      displayName: 'Terraform Apply'
+ 
