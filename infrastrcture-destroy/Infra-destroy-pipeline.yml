@@ -32,6 +32,11 @@ stages:
         aws sts get-caller-identity
       displayName: 'Set AWS Credentials'
 
+    # Terraform Init (required for backend)
+    - script: terraform init -reconfigure
+      workingDirectory: 'infrastrcture-destroy'
+      displayName: 'Terraform Init'
+
     # Terraform Destroy
     - script: terraform destroy -auto-approve
       workingDirectory: 'infrastrcture-destroy'
