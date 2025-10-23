@@ -40,11 +40,11 @@ stages:
 
     # Terraform Plan
     - script: terraform plan -out=tfplan
-      workingDirectory: 'infrastrcture'
+      workingDirectory: 'BackEnd-Terraform'
       displayName: 'Terraform Plan'
 
     # Terraform Apply
     - script: terraform apply -auto-approve tfplan
-      workingDirectory: 'infrastrcture'
+      workingDirectory: 'BackEnd-Terraform'
       displayName: 'Terraform Apply'
  
