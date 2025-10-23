@@ -86,6 +86,11 @@ module "eks" {
 
   # Optional
   endpoint_public_access = true
+  
+# Disable KMS key creation
+  create_kms_key          = false
+  enable_kms_key_rotation = false
+
 
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
