@@ -1,4 +1,13 @@
 
+resource "aws_kms_key" "eks_key" {
+  description = "KMS key for EKS cluster"
+}
+
+resource "aws_kms_alias" "eks_alias" {
+  name          = "alias/eks/my-cluster-eks"
+  target_key_id = aws_kms_key.eks_key.key_id
+}
+
 
 # VPC
 resource "aws_vpc" "main" {
@@ -94,6 +103,8 @@ module "eks" {
 
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
+
+  kms_key_arn             = aws_kms_key.eks_key.arn
 
   compute_config = {
     enabled    = true
