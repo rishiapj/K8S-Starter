@@ -2,7 +2,7 @@
       region = "us-east-1" # Replace with your desired region
     }
 
-    resource "aws_s3_bucket" "terraform_state_bucket" {
+    resource "aws_s3_bucket" "s3_bucket" {
       bucket = "terraform-state-bucket-name" # Choose a globally unique name
       acl    = "private"
 
