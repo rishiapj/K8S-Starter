@@ -106,22 +106,4 @@ module "eks" {
   }
 }
 
-resource "aws_ecr_repository" "client_ui" {
-  name = "client_ui"
-}
 
-resource "aws_ecr_repository" "microservice_a" {
-  name = "microservice-a"
-}
-
-resource "aws_ecr_repository" "microservice_b" {
-  name = "microservice-b"
-}
-
-output "ecr_repository_url_microservice_a" {
-  value = aws_ecr_repository.microservice_a.repository_url
-}
-
-output "ecr_repository_url_microservice_b" {
-  value = aws_ecr_repository.microservice_b.repository_url
-}
