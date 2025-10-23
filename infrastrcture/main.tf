@@ -85,7 +85,6 @@ resource "aws_route_table_association" "asubnet_3_association" {
   route_table_id = aws_route_table.route_table.id
 }
 
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
@@ -93,18 +92,16 @@ module "eks" {
   name               = "my-cluster-eks"
   kubernetes_version = "1.33"
 
-  # Optional
   endpoint_public_access = true
-  
-# Disable KMS key creation
-  create_kms_key          = false
-  enable_kms_key_rotation = false
-
-
-  # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
 
-  kms_key_arn             = aws_kms_key.eks_key.arn
+  # Encryption config for secrets
+  encryption_config = {
+    resources = ["secrets"]
+    provider  = {
+      key_arn = aws_kms_key.eks_key.arn
+    }
+  }
 
   compute_config = {
     enabled    = true
@@ -114,7 +111,6 @@ module "eks" {
   vpc_id                   = aws_vpc.main.id
   subnet_ids               = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
   control_plane_subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
-
 
   tags = {
     Environment = "dev"
