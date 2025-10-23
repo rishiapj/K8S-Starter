@@ -36,7 +36,7 @@ stages:
 
     # Terraform Init
     - script: terraform init
-      workingDirectory: 'infra'
+      workingDirectory: 'infrastrcture'
       displayName: 'Terraform Init'
 
     # Terraform Plan
