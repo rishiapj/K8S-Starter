@@ -1,28 +1,59 @@
 trigger:
-  - main
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  TF_VERSION: '1.6.0'
-  AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
-  AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
-  AWS_REGION: 'us-east-1'
+  awsRegion: 'us-east-1'
+  eksClusterName: 'my-eks-cluster'
 
-steps:
-  - task: UseTerraform@0
-    inputs:
-      terraformVersion: $(TF_VERSION)
+stages:
+- stage: TerraformDeploy
+  jobs:
+  - job: DeployEKS
+    steps:
+    - script: |
+        sudo apt-get update && sudo apt-get install -y unzip
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install terraform -y
+      displayName: 'Install Terraform'
 
-  - script: |
-      terraform init
-    displayName: 'Terraform Init'
+    # Export AWS credentials
+    - script: |
+        export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
+        export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
+        export AWS_DEFAULT_REGION=$(awsRegion)
+        aws sts get-caller-identity
+      displayName: 'Set AWS Credentials'
 
-  - script: |
-      terraform plan -out=tfplan
-    displayName: 'Terraform Plan'
+    # Terraform Init
+    - script: terraform init
+      workingDirectory: 'infra'
+      displayName: 'Terraform Init'
 
-  - script: |
-      terraform apply -auto-approve tfplan
-    displayName: 'Terraform Apply'
+    # Terraform Plan
+    - script: terraform plan -out=tfplan
+      workingDirectory: 'infra'
+      displayName: 'Terraform Plan'
+
+    # Terraform Apply
+    - script: terraform apply -auto-approve tfplan
+      workingDirectory: 'infra'
+      displayName: 'Terraform Apply'
+
+- stage: ConfigureKube
+  dependsOn: TerraformDeploy
+  jobs:
+  - job: KubeSetup
+    steps:
+    - script: |
+        export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
+        export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
+        export AWS_DEFAULT_REGION=$(awsRegion)
+        aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
+      displayName: 'Configure kubeconfig'
+
+    - script: kubectl get nodes
+      displayName: 'Verify EKS Cluster'
