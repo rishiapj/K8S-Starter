@@ -48,7 +48,7 @@ stages:
 
     # Terraform Apply
     - script: terraform apply -auto-approve tfplan
-      workingDirectory: 'infra'
+      workingDirectory: 'infrastrcture'
       displayName: 'Terraform Apply'
 
 - stage: ConfigureKube
