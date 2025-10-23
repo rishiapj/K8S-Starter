@@ -3,20 +3,7 @@
     }
 
     resource "aws_s3_bucket" "s3_bucket" {
-      bucket = "terraform-state-bucket-name" # Choose a globally unique name
-      acl    = "private"
-
-      versioning {
-        enabled = true # Recommended for state file versioning
-      }
-
-      server_side_encryption_configuration {
-        rule {
-          apply_server_side_encryption_by_default {
-            sse_algorithm = "AES256"
-          }
-        }
-      }
+      bucket = "rishi-terraform-bucket" # Choose a globally unique name
 
       tags = {
         Name        = "Terraform State Bucket"
