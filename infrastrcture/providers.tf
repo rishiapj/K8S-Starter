@@ -14,7 +14,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "rishi-terraform-bucket" # change this
+    bucket         = "rishi-terraform-bucket-985809756777" # change this
     key            = "rishi/terraform.tfstate"
     region         = "us-east-1"  
   }
