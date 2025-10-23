@@ -1,16 +1,3 @@
-
-resource "aws_kms_key" "eks_key" {
-  description             = "KMS key for EKS cluster"
-  deletion_window_in_days = 30
-  enable_key_rotation     = true
-}
-
-resource "aws_kms_alias" "eks_alias" {
-  name          = "alias/eks/my-cluster-eks"
-  target_key_id = aws_kms_key.eks_key.key_id
-}
-
-
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -94,16 +81,10 @@ module "eks" {
   name               = "my-cluster-eks"
   kubernetes_version = "1.33"
 
-  endpoint_public_access = true
+  endpoint_public_access                  = true
   enable_cluster_creator_admin_permissions = true
 
-  # Encryption config for secrets
-  encryption_config = {
-    resources = ["secrets"]
-    provider  = {
-      key_arn = aws_kms_key.eks_key.arn
-    }
-  }
+  # Removed encryption_config block → AWS-managed encryption will be used
 
   compute_config = {
     enabled    = true
@@ -119,5 +100,3 @@ module "eks" {
     Terraform   = "true"
   }
 }
-
-
