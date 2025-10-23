@@ -6,7 +6,7 @@ pool:
 
 variables:
   awsRegion: 'us-east-1'
-  eksClusterName: 'my-eks-cluster'
+  eksClusterName: 'my-cluster-eks'
 
 stages:
 - stage: TerraformDeploy
