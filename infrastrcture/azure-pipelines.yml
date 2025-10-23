@@ -16,9 +16,11 @@ variables:
 
 stages:
 - stage: TerraformDeploy
+  displayName: 'Deploy AWS EKS using Terraform'
   jobs:
   - job: DeployEKS
     steps:
+    # Install Terraform
     - script: |
         sudo apt-get update && sudo apt-get install -y unzip
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
@@ -26,22 +28,22 @@ stages:
         sudo apt-get update && sudo apt-get install terraform -y
       displayName: 'Install Terraform'
 
-    # Export AWS credentials
+    # Export AWS credentials securely
     - script: |
-        export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
-        export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
+        export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+        export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
         export AWS_DEFAULT_REGION=$(awsRegion)
         aws sts get-caller-identity
       displayName: 'Set AWS Credentials'
 
     # Terraform Init
     - script: terraform init
-      workingDirectory: 'infrastrcture'
+      workingDirectory: 'infra'
       displayName: 'Terraform Init'
 
     # Terraform Plan
     - script: terraform plan -out=tfplan
-      workingDirectory: 'infrastrcture'
+      workingDirectory: 'infra'
       displayName: 'Terraform Plan'
 
     # Terraform Apply
@@ -51,12 +53,13 @@ stages:
 
 - stage: ConfigureKube
   dependsOn: TerraformDeploy
+  displayName: 'Configure kubeconfig for EKS'
   jobs:
   - job: KubeSetup
     steps:
     - script: |
-        export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
-        export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
+        export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+        export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
         export AWS_DEFAULT_REGION=$(awsRegion)
         aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
       displayName: 'Configure kubeconfig'
