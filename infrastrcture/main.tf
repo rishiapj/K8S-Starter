@@ -83,7 +83,9 @@ module "eks" {
 
   endpoint_public_access                  = true
   enable_cluster_creator_admin_permissions = true
-  # Removed encryption_config → AWS-managed encryption will be used
+
+  # Disable CloudWatch log group creation
+  create_cloudwatch_log_group = false
 
   compute_config = {
     enabled    = true
