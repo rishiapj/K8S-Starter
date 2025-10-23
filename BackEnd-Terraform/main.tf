@@ -5,7 +5,9 @@ provider "aws" {
 
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket = "rishi-terraform-bucket-985809756777" # change this
+  bucket = "rishi-terraform-bucket-985809756777" # change this  
+  force_destroy = true
+
 }
 
 resource "aws_dynamodb_table" "terraform_lock" {
