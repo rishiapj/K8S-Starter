@@ -5,8 +5,14 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  awsRegion: 'us-east-1'
-  eksClusterName: 'my-cluster-eks'
+- group: microservice-library
+
+
+- name: awsRegion
+  value: 'us-east-1'
+
+- name: eksClusterName
+  value: 'my-cluster-eks'
 
 stages:
 - stage: TerraformDeploy
