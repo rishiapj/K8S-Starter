@@ -14,10 +14,8 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "terraform_state_bucket" # change this
+    bucket         = "rishi-terraform-bucket" # change this
     key            = "rishi/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-lock"
+    region         = "us-east-1"  
   }
 }
