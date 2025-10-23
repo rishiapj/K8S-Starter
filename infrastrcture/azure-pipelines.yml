@@ -43,7 +43,7 @@ stages:
 
     # Terraform Plan
     - script: terraform plan -out=tfplan
-      workingDirectory: 'infra'
+      workingDirectory: 'infrastrcture'
       displayName: 'Terraform Plan'
 
     # Terraform Apply
