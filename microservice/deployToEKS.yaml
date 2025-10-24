@@ -40,34 +40,33 @@ stages:
 
         # Apply Kubernetes manifests
       - script: |
-    set -e
-    echo "Applying Deployment..."
-    kubectl apply -f microservice/deployment.yaml
+          set -e
+          echo "Applying Deployment..."
+          kubectl apply -f microservice/deployment.yaml
 
-    echo "Applying Service..."
-    kubectl apply -f microservice/service.yaml
+          echo "Applying Service..."
+          kubectl apply -f microservice/service.yaml
 
-    echo "Applying Ingress..."
-    kubectl apply -f microservice/ingress.yaml
+          echo "Applying Ingress..."
+          kubectl apply -f microservice/ingress.yaml
 
-    echo "Checking Pods..."
-    kubectl get pods -o wide
+          echo "Checking Pods..."
+          kubectl get pods -o wide
 
-    echo "Checking Deployment Rollout..."
-    kubectl rollout status deployment/mvc-app --timeout=120s || {
-      echo "Deployment failed. Showing details..."
-      kubectl describe deployment mvc-app
-      kubectl get pods -o wide
-      exit 1
-    }
+          echo "Checking Deployment Rollout..."
+         kubectl rollout status deployment/mvc-app --timeout=120s || {
+         echo "Deployment failed. Showing details..."
+         kubectl describe deployment mvc-app
+         kubectl get pods -o wide
+         exit 1}
 
-    echo "Checking Services..."
-    kubectl get svc mvc-app-service
+         echo "Checking Services..."
+         kubectl get svc mvc-app-service
 
-    echo "Checking Ingress..."
-    kubectl get ingress mvc-app-ingress
+         echo "Checking Ingress..."
+         kubectl get ingress mvc-app-ingress
 
-    echo "Fetching Application URL..."
-    APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-    echo "Application URL: http://$APP_URL"
-  displayName: 'Deploy and Validate MVC App'
+         echo "Fetching Application URL..."
+         APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+         echo "Application URL: http://$APP_URL"
+        displayName: 'Deploy and Validate MVC App'
