@@ -55,19 +55,19 @@ stages:
               sudo ./aws/install
 
               echo "Configuring AWS credentials..."
-              aws configure set aws_access_key_id $(awsAccessKeyId)
-              aws configure set aws_secret_access_key $(awsSecretAccessKey)
+              aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID)
+              aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY)
               aws configure set default.region $(awsRegion)
 
               echo "Logging in to AWS ECR..."
-              echo "The value of my variable is $awsAccessKeyId"
-              echo "Access awsSecretAccessKey is $awsSecretAccessKey"
+              echo "The value of my variable is $AWS_ACCESS_KEY_ID"
+              echo "Access awsSecretAccessKey is $AWS_SECRET_ACCESS_KEY"
 
               aws ecr get-login-password --region $(awsRegion) | docker login --username AWS --password-stdin $(awsAccountId).dkr.ecr.$(awsRegion).amazonaws.com
             displayName: 'Install AWS CLI and Login to ECR'
             env:
-              awsAccessKeyId: $(awsAccessKeyId)
-              awsSecretAccessKey: $(awsSecretAccessKey)
+              awsAccessKeyId: $(AWS_ACCESS_KEY_ID)
+              awsSecretAccessKey: $(AWS_SECRET_ACCESS_KEY)
           - script: ls -R
             displayName: 'List all files'
 
