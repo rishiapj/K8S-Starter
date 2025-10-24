@@ -11,16 +11,6 @@ variables:
 
 
 
-- name: ecrClientRepoName
-  value: microservice/my-mvc-app'
-
-- name: imageTag
-  value: 'latest'
-
-- name: awsAccountId
-  value: '985809756777'
-
-
 stages:
   - stage: BuildAndPush
     jobs:
