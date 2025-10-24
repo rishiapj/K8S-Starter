@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: mvc-app
-        image: $(awsAccountId).dkr.ecr.us-east-1.amazonaws.com/$(ecrClientRepoName):$(imageTag)
+        image: $(awsAccountId).dkr.ecr.us-east-1.amazonaws.com/$(ecrClientRepoName)
         ports:
         - containerPort: 80
