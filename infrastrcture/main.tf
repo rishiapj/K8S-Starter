@@ -14,12 +14,12 @@ module "eks" {
   subnet_ids               = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
   control_plane_subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
 
-  # Add managed node group
-  managed_node_groups = {
+  # ✅ Correct block name for node groups
+  eks_managed_node_groups = {
     general-purpose = {
-      desired_capacity = 2
-      min_capacity     = 1
-      max_capacity     = 3
+      desired_size = 2
+      min_size     = 1
+      max_size     = 3
 
       instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
