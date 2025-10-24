@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mvc-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mvc-app
+  template:
+    metadata:
+      labels:
+        app: mvc-app
+    spec:
+      containers:
+      - name: mvc-app
+        image: 985809756777.dkr.ecr.us-east-1.amazonaws.com/my-mvc-app:latest
+        ports:
+        - containerPort: 80
