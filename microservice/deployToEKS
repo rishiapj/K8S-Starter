@@ -7,9 +7,6 @@ pool:
 variables:
 - group: microservice-library
 
-- name: awsRegion
-  value: 'us-east-1'
-
 stages:
 - stage: DeployToEKS
   displayName: 'Deploy MVC App to AWS EKS'
