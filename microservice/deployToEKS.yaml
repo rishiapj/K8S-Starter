@@ -13,6 +13,8 @@ stages:
   jobs:
     - job: ApplyK8sManifests
       displayName: 'Apply Kubernetes Manifests'
+      steps:
+        # Update AWS CLI and Install kubectl
         - script: |
             set -e
             echo "Updating AWS CLI and installing kubectl..."
@@ -26,7 +28,6 @@ stages:
             sudo mv kubectl /usr/local/bin/
             kubectl version --client
           displayName: 'Update AWS CLI and Install kubectl'
-
 
         # Configure AWS credentials
         - script: |
@@ -56,6 +57,7 @@ stages:
 
             echo "Checking Pods..."
             kubectl get pods -o wide
+
             echo "Applying Service..."
             kubectl apply -f microservice/service.yaml
             kubectl get svc mvc-app-service
