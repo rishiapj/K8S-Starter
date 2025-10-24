@@ -48,6 +48,12 @@ stages:
             echo "Applying Service..."
             kubectl apply -f microservice/service.yaml
 
+            echo "Getting Service Service..."
+            kubectl get svc mvc-app-service
+
+            echo "Getting endpoints Service..."
+            kubectl get endpoints mvc-app-service
+
             echo "Applying Ingress..."
             kubectl apply -f microservice/ingress.yaml
 
