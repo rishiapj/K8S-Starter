@@ -45,6 +45,9 @@ stages:
             kubectl apply -f microservice/deployment.yaml
             kubectl rollout status deployment/mvc-app --timeout=120s
 
+            echo "Checking Pods..."
+            kubectl get pods -o wide
+
             echo "Applying Service..."
             kubectl apply -f microservice/service.yaml
 
@@ -55,13 +58,7 @@ stages:
             kubectl get endpoints mvc-app-service
 
             echo "Applying Ingress..."
-            kubectl apply -f microservice/ingress.yaml
-
-            echo "Checking Pods..."
-            kubectl get pods -o wide
-
-            echo "Checking Services..."
-            kubectl get svc mvc-app-service
+            kubectl apply -f microservice/ingress.yaml      
 
             echo "Checking Ingress..."
             kubectl get ingress mvc-app-ingress
