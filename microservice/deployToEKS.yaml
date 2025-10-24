@@ -63,6 +63,4 @@ stages:
             kubectl apply -f microservice/ingress.yaml
             kubectl get ingress mvc-app-ingress
 
-            echo "Fetching Application URL..."
-            for i in {1..10}; do
-              APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
