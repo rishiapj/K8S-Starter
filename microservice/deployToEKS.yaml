@@ -45,6 +45,18 @@ stages:
             AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
             AWS_DEFAULT_REGION: $(awsRegion)
 
+
+            
+# Grant IAM User access to EKS cluster
+        - script: |
+            set -e
+            echo "Updating aws-auth ConfigMap to grant access for IAM user rishikesh..."
+            kubectl patch configmap aws-auth -n kube-system --type merge -p \
+            '{"data":{"mapUsers":"- userarn: arn:aws:iam::985809756777:user/rishikesh\n  username: rishikesh\n  groups:\n    - system:masters"}}'
+            echo "IAM user rishikesh added to aws-auth ConfigMap."
+          displayName: 'Grant IAM User Access to EKS'
+
+
         # Apply Kubernetes manifests
         - script: |
             set -e
