@@ -43,6 +43,7 @@ stages:
             set -e
             echo "Applying Deployment..."
             kubectl apply -f microservice/deployment.yaml
+            kubectl rollout status deployment/mvc-app --timeout=120s
 
             echo "Applying Service..."
             kubectl apply -f microservice/service.yaml
