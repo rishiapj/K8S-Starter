@@ -16,27 +16,38 @@ stages:
       steps:
         # Install AWS CLI and kubectl
         - script: |
-           
+            set -e
+            echo "Installing AWS CLI and kubectl..."
             sudo apt-get update && sudo apt-get install -y unzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            aws --version
+
             curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/
             kubectl version --client
-
           displayName: 'Install AWS CLI and kubectl'
 
         # Configure AWS credentials
         - script: |
-            export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
-            export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
-            export AWS_DEFAULT_REGION=$(awsRegion)
             aws sts get-caller-identity
-          displayName: 'Set AWS Credentials'
+          displayName: 'Verify AWS Credentials'
+          env:
+            AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+            AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+            AWS_DEFAULT_REGION: $(awsRegion)
 
         # Update kubeconfig for EKS cluster
         - script: |
             aws eks update-kubeconfig --region $(awsRegion) --name my-cluster-eks
+            kubectl config current-context
           displayName: 'Configure kubectl for EKS'
+          env:
+            AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+            AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+            AWS_DEFAULT_REGION: $(awsRegion)
 
         # Apply Kubernetes manifests
         - script: |
@@ -47,23 +58,41 @@ stages:
 
             echo "Checking Pods..."
             kubectl get pods -o wide
-
             echo "Applying Service..."
             kubectl apply -f microservice/service.yaml
-
-            echo "Getting Service Service..."
             kubectl get svc mvc-app-service
 
-            echo "Getting endpoints Service..."
-            kubectl get endpoints mvc-app-service
-
             echo "Applying Ingress..."
-            kubectl apply -f microservice/ingress.yaml      
-
-            echo "Checking Ingress..."
+            kubectl apply -f microservice/ingress.yaml
             kubectl get ingress mvc-app-ingress
 
             echo "Fetching Application URL..."
-            APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            for i in {1..10}; do
+              APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+              if [ -n "$APP_URL" ]; then break; fi
+              echo "Waiting for ingress hostname..."
+              sleep 30
+            done
             echo "Application URL: http://$APP_URL"
           displayName: 'Deploy and Validate MVC App'
+
+        # Debugging: Cluster, Deployment, Pods, Events
+        - script: |
+            echo "=== Cluster Info ==="
+            kubectl cluster-info
+
+            echo "=== All Namespaces Pods ==="
+            kubectl get pods --all-namespaces -o wide
+
+            echo "=== Describe Deployment ==="
+            kubectl describe deployment mvc-app || echo "Deployment not found"
+
+            echo "=== Describe Pods ==="
+            for pod in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
+              echo "---- $pod ----"
+              kubectl describe pod $pod
+            done
+
+            echo "=== Recent Events ==="
+            kubectl get events --sort-by=.metadata.creationTimestamp | tail -n 20
+          displayName: 'Debug Cluster and Pods'
