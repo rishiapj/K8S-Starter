@@ -12,7 +12,7 @@ variables:
 
 
 - name: ecrClientRepoName
-  value: 'microservice/client'
+  value: microservice/my-mvc-app'
 
 - name: imageTag
   value: 'latest'
