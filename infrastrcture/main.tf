@@ -1,117 +1,31 @@
-# VPC
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-
-  tags = {
-    Name = "eks-vpc"
-  }
-}
-
-resource "aws_subnet" "subnet_1" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.0.0/20"
-  availability_zone       = "us-east-1b"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "eks-subnet-1"
-  }
-}
-
-resource "aws_subnet" "subnet_2" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.16.0/20"
-  availability_zone       = "us-east-1c"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "eks-subnet-2"
-  }
-}
-
-resource "aws_subnet" "subnet_3" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.32.0/20"
-  availability_zone       = "us-east-1d"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "eks-subnet-3"
-  }
-}
-
-resource "aws_internet_gateway" "internet_gw" {
-  vpc_id = aws_vpc.main.id
-}
-
-resource "aws_route_table" "route_table" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gw.id
-  }
-
-  route {
-    cidr_block = "10.0.0.0/16"
-    gateway_id = "local"
-  }
-}
-
-resource "aws_route_table_association" "asubnet_1_association" {
-  subnet_id      = aws_subnet.subnet_1.id
-  route_table_id = aws_route_table.route_table.id
-}
-
-resource "aws_route_table_association" "asubnet_2_association" {
-  subnet_id      = aws_subnet.subnet_2.id
-  route_table_id = aws_route_table.route_table.id
-}
-
-resource "aws_route_table_association" "asubnet_3_association" {
-  subnet_id      = aws_subnet.subnet_3.id
-  route_table_id = aws_route_table.route_table.id
-}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 21.0"
+  version = "~> 20.0"
 
-  name               = "my-cluster-eks"
-  kubernetes_version = "1.33"
+  cluster_name    = var.eks_name
+  cluster_version = "1.30"
 
-  endpoint_public_access                   = true
-  enable_cluster_creator_admin_permissions = true
+  enable_irsa = true
 
-  create_cloudwatch_log_group = false
-
-  vpc_id                   = aws_vpc.main.id
-  subnet_ids               = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
-  control_plane_subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
-
-  # ✅ Correct block name for node groups
-  eks_managed_node_groups = {
-    general-purpose = {
-      desired_size = 2
-      min_size     = 1
-      max_size     = 3
-
-      instance_types = ["t3.medium"]
-      capacity_type  = "ON_DEMAND"
-
-      labels = {
-        role = "general"
-      }
-
-      tags = {
-        Name = "eks-node-group"
-      }
-    }
-  }
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   tags = {
-    Environment = "dev"
-    Terraform   = "true"
+    cluster = "my-eks-cluster"
+  }
+
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    ami_type               = "AL2_x86_64"
+    instance_types         = ["t2.micro"]
+    vpc_security_group_ids = [aws_security_group.eks-sg.id]
+  }
+
+  eks_managed_node_groups = {
+    node_group = {
+      min_size     = 2
+      max_size     = 3
+      desired_size = 2
+    }
   }
 }
