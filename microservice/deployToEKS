@@ -40,7 +40,7 @@ stages:
 
         # Apply Kubernetes manifests
         - script: |
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-            kubectl apply -f k8s/ingress.yaml
+            kubectl apply -f microservice/deployment.yaml
+            kubectl apply -f microservice/service.yaml
+            kubectl apply -f microservice/ingress.yaml
           displayName: 'Deploy MVC App to EKS'
