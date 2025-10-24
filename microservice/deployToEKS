@@ -1,0 +1,49 @@
+trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: microservice-library
+
+- name: awsRegion
+  value: 'us-east-1'
+
+stages:
+- stage: DeployToEKS
+  displayName: 'Deploy MVC App to AWS EKS'
+  jobs:
+    - job: ApplyK8sManifests
+      displayName: 'Apply Kubernetes Manifests'
+      steps:
+        # Install AWS CLI and kubectl
+        - script: |
+            sudo apt-get update && sudo apt-get install -y unzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+          displayName: 'Install AWS CLI and kubectl'
+
+        # Configure AWS credentials
+        - script: |
+            export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+            export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
+            export AWS_DEFAULT_REGION=$(awsRegion)
+            aws sts get-caller-identity
+          displayName: 'Set AWS Credentials'
+
+        # Update kubeconfig for EKS cluster
+        - script: |
+            aws eks update-kubeconfig --region $(awsRegion) --name my-cluster-eks
+          displayName: 'Configure kubectl for EKS'
+
+        # Apply Kubernetes manifests
+        - script: |
+            kubectl apply -f k8s/deployment.yaml
+            kubectl apply -f k8s/service.yaml
+            kubectl apply -f k8s/ingress.yaml
+          displayName: 'Deploy MVC App to EKS'
