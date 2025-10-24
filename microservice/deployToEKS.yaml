@@ -23,7 +23,9 @@ stages:
             sudo ./aws/install --update
             aws --version
 
-            curl -sSL "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o kubectl
+            # Fetch latest kubectl version and install
+            KUBECTL_VERSION=$(curl -s https://dl.k8s.io/release/stable.txt)
+            curl -sSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o kubectl
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/
             kubectl version --client
@@ -69,30 +71,3 @@ stages:
             echo "Fetching Application URL..."
             for i in {1..10}; do
               APP_URL=$(kubectl get ingress mvc-app-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-              if [ -n "$APP_URL" ]; then break; fi
-              echo "Waiting for ingress hostname..."
-              sleep 30
-            done
-            echo "Application URL: http://$APP_URL"
-          displayName: 'Deploy and Validate MVC App'
-
-        # Debugging: Cluster, Deployment, Pods, Events
-        - script: |
-            echo "=== Cluster Info ==="
-            kubectl cluster-info
-
-            echo "=== All Namespaces Pods ==="
-            kubectl get pods --all-namespaces -o wide
-
-            echo "=== Describe Deployment ==="
-            kubectl describe deployment mvc-app || echo "Deployment not found"
-
-            echo "=== Describe Pods ==="
-            for pod in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
-              echo "---- $pod ----"
-              kubectl describe pod $pod
-            done
-
-            echo "=== Recent Events ==="
-            kubectl get events --sort-by=.metadata.creationTimestamp | tail -n 20
-          displayName: 'Debug Cluster and Pods'
