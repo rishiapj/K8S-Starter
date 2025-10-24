@@ -13,22 +13,20 @@ stages:
   jobs:
     - job: ApplyK8sManifests
       displayName: 'Apply Kubernetes Manifests'
-      steps:
-        # Install AWS CLI and kubectl
-        - script: |
-            set -e
-            echo "Installing AWS CLI and kubectl..."
-            sudo apt-get update && sudo apt-get install -y unzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install --update
-            aws --version
+      - script: |
+          set -e
+          echo "Updating AWS CLI and installing kubectl..."
+          curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+          aws --version
 
-            curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x kubectl
-            sudo mv kubectl /usr/local/bin/
-            kubectl version --client
-          displayName: 'Install AWS CLI and kubectl'
+           curl -sSL "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o kubectl
+           chmod +x kubectl
+           sudo mv kubectl /usr/local/bin/
+           kubectl version --client
+        displayName: 'Update AWS CLI and Install kubectl'
+
 
         # Configure AWS credentials
         - script: |
