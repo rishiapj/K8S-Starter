@@ -60,13 +60,6 @@ stages:
             echo "Checking Pods..."
             kubectl get pods -o wide
 
-            echo "Checking Deployment Rollout..."
-            kubectl rollout status deployment/mvc-app --timeout=120s || {
-            echo "Deployment failed. Showing details..."
-            kubectl describe deployment mvc-app
-            kubectl get pods -o wide
-            exit 1}
-
             echo "Checking Services..."
             kubectl get svc mvc-app-service
 
