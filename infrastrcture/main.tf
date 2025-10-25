@@ -11,7 +11,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   tags = {
-    cluster = "my-eks-cluster"
+    cluster = "my-aws-eks-cluster"
   }
 
   # EKS Managed Node Group(s)
