@@ -40,7 +40,9 @@ stages:
       displayName: 'Terraform Plan'
 
     # Terraform Apply
-    - script: terraform apply -auto-approve tfplan
+    - script: |
+        terraform apply -auto-approve tfplan
+        kubectl get configmap aws-auth -n kube-system -o yaml
       workingDirectory: 'infrastrcture'
       displayName: 'Terraform Apply'
 
