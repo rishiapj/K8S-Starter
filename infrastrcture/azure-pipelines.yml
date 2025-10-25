@@ -8,12 +8,6 @@ variables:
 - group: microservice-library
 
 
-- name: awsRegion
-  value: 'us-east-1'
-
-- name: eksClusterName
-  value: 'my-cluster-eks'
-
 stages:
 - stage: TerraformDeploy
   displayName: 'Deploy AWS EKS using Terraform'
