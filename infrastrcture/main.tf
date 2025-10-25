@@ -14,6 +14,13 @@ module "eks" {
     cluster = "my-aws-eks-cluster"
   }
 
+  
+cluster_encryption_config = {
+    resources        = ["secrets"]
+    provider_key_arn = var.existing_kms_key_arn != "" ? var.existing_kms_key_arn : aws_kms_key.eks_key[0].arn
+  }
+
+
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type               = "AL2_x86_64"
