@@ -10,7 +10,7 @@ data:
       groups:
         - pipeline-deploy-group
   mapUsers: |
-    - userarn: arn:aws:iam::985809756777:user/<your-iam-user>
+    - userarn: arn:aws:iam::985809756777:user/rishikesh
       username: pipeline-user
       groups:
         - pipeline-deploy-group
