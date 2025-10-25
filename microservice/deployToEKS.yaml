@@ -37,7 +37,7 @@ stages:
 
         # Update kubeconfig for EKS cluster
         - script: |
-            aws eks update-kubeconfig --region $(awsRegion) --name my-cluster-eks
+            aws eks update-kubeconfig --region $(awsRegion) --name my-aws-eks-cluster
             kubectl config current-context
           displayName: 'Configure kubectl for EKS'
           env:
