@@ -29,14 +29,21 @@ module "eks" {
 
   
  # ✅ Add IAM role mapping here
-  manage_aws_auth = true
+  
+resource "aws_eks_access_entry" "pipeline_role_access" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.pipeline_role_arn
+  type          = "STANDARD"
+}
 
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::985809756777:role/dev-cluster-role"
-      username = "pipeline"
-      groups   = ["system:masters"]
-    }
-  ]
+resource "aws_eks_access_policy_association" "pipeline_role_policy" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = aws_eks_access_entry.pipeline_role_access.principal_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  access_scope {
+    type = "cluster"
+  }
+}
+
 
 }
