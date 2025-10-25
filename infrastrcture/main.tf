@@ -28,22 +28,7 @@ module "eks" {
   }
 
   
- # ✅ Add IAM role mapping here
-  
-resource "aws_eks_access_entry" "pipeline_role_access" {
-  cluster_name  = module.eks.cluster_name
-  principal_arn = var.pipeline_role_arn
-  type          = "STANDARD"
-}
-
-resource "aws_eks_access_policy_association" "pipeline_role_policy" {
-  cluster_name  = module.eks.cluster_name
-  principal_arn = aws_eks_access_entry.pipeline_role_access.principal_arn
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  access_scope {
-    type = "cluster"
-  }
-}
+ 
 
 
 }
