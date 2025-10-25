@@ -27,7 +27,6 @@ stages:
         export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
         export AWS_DEFAULT_REGION=$(awsRegion)
         aws sts get-caller-identity
-        aws kms delete-alias --alias-name alias/eks/my-aws-eks-cluster --region us-east-1
         aws logs delete-log-group --log-group-name /aws/eks/my-aws-eks-cluster/cluster --region us-east-1     
       
       displayName: 'Set AWS Credentials'
