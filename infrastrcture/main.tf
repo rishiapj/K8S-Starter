@@ -26,4 +26,17 @@ module "eks" {
       desired_size = 2
     }
   }
+
+  
+ # ✅ Add IAM role mapping here
+  manage_aws_auth = true
+
+  aws_auth_roles = [
+    {
+      rolearn  = "arn:aws:iam::985809756777:role/dev-cluster-role"
+      username = "pipeline"
+      groups   = ["system:masters"]
+    }
+  ]
+
 }
