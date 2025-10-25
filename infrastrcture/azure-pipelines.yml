@@ -65,7 +65,7 @@ stages:
       displayName: 'Install aws-iam-authenticator'
 
     - script: |
-        kubectl apply -f infrastrcture/aws-auth.yaml
+        kubectl apply -f infrastrcture/aws-auth.yaml --validate=false
       displayName: 'Apply aws-auth ConfigMap'
 
 
