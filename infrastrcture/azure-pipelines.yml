@@ -8,6 +8,9 @@ variables:
 - group: microservice-library
 
 stages:
+# -------------------------------
+# Stage 1: Deploy EKS using Terraform
+# -------------------------------
 - stage: TerraformDeploy
   displayName: 'Deploy AWS EKS using Terraform'
   jobs:
@@ -15,7 +18,7 @@ stages:
     steps:
     # Install Terraform
     - script: |
-        sudo apt-get update && sudo apt-get install -y unzip
+        sudo apt-get update && sudo apt-get install -y unzip jq
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
         sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install terraform -y
@@ -42,39 +45,49 @@ stages:
     # Terraform Apply
     - script: |
         terraform apply -auto-approve tfplan
-        kubectl get configmap aws-auth -n kube-system -o yaml
         aws sts get-caller-identity
       workingDirectory: 'infrastrcture'
       displayName: 'Terraform Apply'
 
+# -------------------------------
+# Stage 2: Configure kubeconfig for EKS
+# -------------------------------
 - stage: ConfigureKube
   dependsOn: TerraformDeploy
   displayName: 'Configure kubeconfig for EKS'
   jobs:
   - job: KubeSetup
     steps:
+    # ✅ Step 4: Assume IAM Role and Configure kubeconfig
     - script: |
-        export AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
-        export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
-        export AWS_DEFAULT_REGION=$(awsRegion)
-        aws eks update-kubeconfig --name my-aws-eks-cluster --region us-east-1
-        aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
-      displayName: 'Configure kubeconfig'
+        echo "Assuming IAM Role for EKS access"
+        CREDS=$(aws sts assume-role --role-arn arn:aws:iam::<account-id>:role/azure-pipeline-eks-role --role-session-name eks-pipeline)
+        export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
+        export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
+        export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
 
+        # Update kubeconfig using assumed role
+        aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
+
+        # Test cluster access
+        aws sts get-caller-identity
+        kubectl get nodes --v=8
+      displayName: 'Assume Role and Configure kubeconfig'
+
+    # Install aws-iam-authenticator
     - script: |
         curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.30.0/2024-07-11/bin/linux/amd64/aws-iam-authenticator
         chmod +x aws-iam-authenticator
         sudo mv aws-iam-authenticator /usr/local/bin/
       displayName: 'Install aws-iam-authenticator'
 
+    # Apply aws-auth ConfigMap (optional if using Access Entries)
     - script: |
         kubectl apply -f infrastrcture/aws-auth.yaml --validate=false
       displayName: 'Apply aws-auth ConfigMap'
 
-
+    # Verify cluster
     - script: |
         kubectl get nodes
         kubectl cluster-info
       displayName: 'Verify EKS Cluster'
-
-   
