@@ -61,11 +61,7 @@ stages:
     # ✅ Step 4: Assume IAM Role and Configure kubeconfig
     - script: |
         echo "Assuming IAM Role for EKS access"
-        CREDS=$(aws sts assume-role --role-arn arn:aws:iam::985809756777:role/azure-pipeline-eks-role --role-session-name eks-pipeline)
-        export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
-        export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
-        export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
-
+        
         # Update kubeconfig using assumed role
         aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
 
