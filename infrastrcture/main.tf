@@ -1,8 +1,3 @@
-variable "eks_name" {
-  type        = string
-  description = "Name of the EKS cluster"
-}
-
 # Detect existing KMS alias
 data "aws_kms_alias" "existing" {
   name = "alias/eks/${var.eks_name}"
