@@ -6,7 +6,7 @@ variable "aws_region" {
 variable "vpc_name" {
   description = "VPC name"
   type        = string
-  default     = "eks-vpc"
+  default     = "my-aws-eks-vpc"
 
 }
 
@@ -18,11 +18,11 @@ variable "vpc_cidr" {
 variable "eks_name" {
   description = "AWS EKS Cluster name"
   type        = string  
-  default     = "my-eks-cluster"
+  default     = "my-aws-eks-cluster"
 
 }
 
 variable "sg_name" {
   description = "Security group name"
-  default     = "aws-eks-sg"
+  default     = "my-aws-eks-sg"
 }
