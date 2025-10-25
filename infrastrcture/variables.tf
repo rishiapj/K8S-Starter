@@ -27,9 +27,3 @@ variable "sg_name" {
   default     = "my-aws-eks-sg"
 }
 
-
-
-variable "pipeline_role_arn" {
-  description = "IAM Role ARN for Azure Pipeline"
-  type        = string
-}
