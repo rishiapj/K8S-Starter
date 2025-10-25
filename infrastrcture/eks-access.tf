@@ -43,3 +43,5 @@ resource "aws_eks_access_policy_association" "pipeline_role_policy" {
     type = "cluster"
   }
 }
+
+
