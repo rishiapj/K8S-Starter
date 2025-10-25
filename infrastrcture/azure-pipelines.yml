@@ -27,6 +27,9 @@ stages:
         export AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
         export AWS_DEFAULT_REGION=$(awsRegion)
         aws sts get-caller-identity
+        
+        aws kms delete-alias --alias-name alias/eks/my-aws-eks-cluster
+
       displayName: 'Set AWS Credentials'
 
     # Terraform Init
