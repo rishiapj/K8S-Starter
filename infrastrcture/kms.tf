@@ -1,7 +1,6 @@
 resource "aws_kms_key" "eks_key" {
-  description             = "KMS key for EKS cluster encryption"
-  deletion_window_in_days = 30
-  enable_key_rotation     = trueeks_name
+  enable_key_rotation = true
+  description         = var.eks_name  # if you want to use eks_name here
 }
 
 resource "aws_kms_alias" "eks_alias" {
