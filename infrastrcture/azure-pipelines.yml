@@ -61,7 +61,15 @@ stages:
         aws eks update-kubeconfig --region $(awsRegion) --name $(eksClusterName)
       displayName: 'Configure kubeconfig'
 
-    - script: kubectl get nodes
+     - script: |
+         curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.30.0/2024-07-11/bin/linux/amd64/aws-iam-authenticator
+         chmod +x aws-iam-authenticator
+         mv aws-iam-authenticator /usr/local/bin/
+       displayName: 'Install aws-iam-authenticator'
+
+    - script: |
+        kubectl get nodes        
+        kubectl cluster-info
       displayName: 'Verify EKS Cluster'
 
     # ✅ Apply aws-auth ConfigMap from file
