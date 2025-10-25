@@ -7,7 +7,6 @@ pool:
 variables:
 - group: microservice-library
 
-
 stages:
 - stage: TerraformDeploy
   displayName: 'Deploy AWS EKS using Terraform'
@@ -60,3 +59,8 @@ stages:
 
     - script: kubectl get nodes
       displayName: 'Verify EKS Cluster'
+
+    # ✅ Apply aws-auth ConfigMap from file
+    - script: |
+        kubectl apply -f infrastrcture/aws-auth.yaml
+      displayName: 'Apply aws-auth ConfigMap'
