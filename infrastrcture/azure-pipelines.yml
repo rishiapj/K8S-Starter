@@ -30,6 +30,7 @@ stages:
         aws kms list-aliases --query "Aliases[?AliasName=='alias/eks/my-aws-eks-cluster']"   
         aws kms delete-alias --alias-name alias/eks/my-aws-eks-cluster
         aws kms list-aliases --query "Aliases[?AliasName=='alias/eks/my-aws-eks-cluster']"
+        aws kms delete-alias --alias-name alias/eks/my-aws-eks-cluster
 
       displayName: 'Set AWS Credentials'
 
