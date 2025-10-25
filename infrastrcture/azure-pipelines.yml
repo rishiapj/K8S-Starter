@@ -43,6 +43,7 @@ stages:
     - script: |
         terraform apply -auto-approve tfplan
         kubectl get configmap aws-auth -n kube-system -o yaml
+        aws sts get-caller-identity
       workingDirectory: 'infrastrcture'
       displayName: 'Terraform Apply'
 
