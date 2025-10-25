@@ -1,23 +1,19 @@
-# Detect existing KMS alias
 data "aws_kms_alias" "existing" {
   name = "alias/eks/${var.eks_name}"
 }
 
-# Create KMS key only if alias does not exist
 resource "aws_kms_key" "eks_key" {
-  count               = length(data.aws_kms_alias.existing.*.id) == 0 ? 1 : 0
+  count               = try(data.aws_kms_alias.existing.id, "") == "" ? 1 : 0
   enable_key_rotation = true
   description         = var.eks_name
 }
 
-# Create alias only if new key is created
 resource "aws_kms_alias" "eks_alias" {
-  count        = length(data.aws_kms_alias.existing.*.id) == 0 ? 1 : 0
+  count        = try(data.aws_kms_alias.existing.id, "") == "" ? 1 : 0
   name         = "alias/eks/${var.eks_name}"
   target_key_id = aws_kms_key.eks_key[0].key_id
 }
 
-# Local to determine which ARN to use
 locals {
   kms_key_arn = try(data.aws_kms_alias.existing.target_key_id, aws_kms_key.eks_key[0].arn)
 }
