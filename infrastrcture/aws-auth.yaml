@@ -5,12 +5,12 @@ metadata:
   namespace: kube-system
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::<account-id>:role/<your-iam-role>
+    - rolearn: arn:aws:iam::985809756777:role/<your-iam-role>
       username: pipeline-role
       groups:
         - pipeline-deploy-group
   mapUsers: |
-    - userarn: arn:aws:iam::<account-id>:user/<your-iam-user>
+    - userarn: arn:aws:iam::985809756777:user/<your-iam-user>
       username: pipeline-user
       groups:
         - pipeline-deploy-group
