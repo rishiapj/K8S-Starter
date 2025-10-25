@@ -28,7 +28,6 @@ stages:
         export AWS_DEFAULT_REGION=$(awsRegion)
         aws sts get-caller-identity     
         aws kms list-aliases --query "Aliases[?AliasName=='alias/eks/my-aws-eks-cluster']"   
-        aws kms delete-alias --alias-name alias/eks/my-aws-eks-cluster
         aws kms list-aliases --query "Aliases[?AliasName=='alias/eks/my-aws-eks-cluster']"
         terraform import 'module.eks.module.kms.aws_kms_alias.this["cluster"]' arn:aws:kms:us-east-1:985809756777:alias/eks/my-aws-eks-cluster
 
