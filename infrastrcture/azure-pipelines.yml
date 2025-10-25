@@ -65,10 +65,13 @@ stages:
       displayName: 'Install aws-iam-authenticator'
 
     - script: |
+        kubectl apply -f infrastrcture/aws-auth.yaml
+      displayName: 'Apply aws-auth ConfigMap'
+
+
+    - script: |
         kubectl get nodes
         kubectl cluster-info
       displayName: 'Verify EKS Cluster'
 
-    - script: |
-        kubectl apply -f infrastrcture/aws-auth.yaml
-      displayName: 'Apply aws-auth ConfigMap'
+   
