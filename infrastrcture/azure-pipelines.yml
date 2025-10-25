@@ -39,11 +39,6 @@ stages:
       displayName: 'Terraform Init'
 
 
-    
-    - script: |
-        terraform import aws_kms_alias.eks_alias arn:aws:kms:us-east-1:985809756777:alias/eks/my-aws-eks-cluster || echo "Alias already imported or not needed"
-      workingDirectory: 'infrastrcture'
-      displayName: 'Terraform Import KMS Alias'
 
     # Terraform Plan
     - script: terraform plan -out=tfplan
