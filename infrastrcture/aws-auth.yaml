@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::985809756777:role/<your-iam-role>
+    - rolearn: arn:aws:iam::985809756777:role/dev-cluster-role
       username: pipeline-role
       groups:
         - pipeline-deploy-group
