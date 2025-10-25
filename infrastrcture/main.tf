@@ -1,7 +1,4 @@
-variable "eks_name" {
-  type        = string
-  description = "Name of the EKS cluster"
-}
+
 
 variable "existing_kms_key_arn" {
   type        = string
