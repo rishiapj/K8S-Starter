@@ -1,0 +1,1 @@
+VPC--> IAM Roles and Policy --> EKS Cluster --> Add Ons --> Worker nodes
