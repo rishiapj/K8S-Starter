@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.9.3"
+  required_version = ">= 1.9.3"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -10,7 +10,6 @@ terraform {
     bucket         = "dev-rishi-tf-bucket"
     region         = "us-east-1"
     key            = "eks/terraform.tfstate"
-    use_loc_files = true
     encrypt        = true
   }
 }
