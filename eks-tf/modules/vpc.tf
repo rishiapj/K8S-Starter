@@ -180,24 +180,14 @@ variable "key_name" {
 variable "my_ip" {
   description = "Your public IP for SSH access"
   type        = string
-  default     = "203.0.113.5/32" # Replace with your actual IP
-}
-
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
-}
-
-variable "public_subnet_id" {
-  description = "Public subnet ID for bastion host"
-  type        = string
+  default     = "106.219.152.90" # Replace with your actual IP
 }
 
 # Security Group for Bastion Host
 resource "aws_security_group" "bastion_sg" {
   name        = "bastion-sg"
   description = "Allow SSH from your IP"
-  vpc_id      = var.vpc_id
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
     from_port   = 22
@@ -253,7 +243,7 @@ resource "aws_iam_instance_profile" "bastion_profile" {
 resource "aws_instance" "bastion_ec2" {
   ami                    = "ami-0f5ee92e2d63afc18" # Ubuntu 22.04 LTS in ap-south-1
   instance_type          = "t2.micro"
-  subnet_id              = var.public_subnet_id
+  subnet_id              = aws_subnet.public-subnet[0].id
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
@@ -263,5 +253,6 @@ resource "aws_instance" "bastion_ec2" {
     Name = "Bastion-Host"
   }
 }
+
 
 
