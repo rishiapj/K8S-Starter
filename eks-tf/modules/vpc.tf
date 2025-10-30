@@ -166,9 +166,7 @@ resource "aws_security_group" "eks-cluster-sg" {
   tags = {
     Name = var.eks-sg
   }
-
 }
-
 
 
 variable "key_name" {
@@ -180,7 +178,7 @@ variable "key_name" {
 variable "my_ip" {
   description = "Your public IP for SSH access"
   type        = string
-  default     = "106.219.152.90" # Replace with your actual IP
+  default     = "106.219.152.90/32" # Replace with your actual IP
 }
 
 # Security Group for Bastion Host
@@ -193,8 +191,18 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
+  
+ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to all (common for web servers)
+  }
+
 
   egress {
     from_port   = 0
@@ -249,11 +257,35 @@ resource "aws_instance" "bastion_ec2" {
   iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
   associate_public_ip_address = true
 
+
+
+user_data = <<-EOF
+    #!/bin/bash
+    # Update packages
+    apt-get update -y
+
+    # Install unzip and curl
+    apt-get install -y unzip curl
+
+    # Install AWS CLI
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+
+    # Install kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin/
+
+    # Verify installations
+    aws --version
+    kubectl version --client
+  EOF
+
   tags = {
     Name = "Bastion-Host"
   }
 }
-
 
 
 
