@@ -166,4 +166,5 @@ resource "aws_security_group" "eks-cluster-sg" {
   tags = {
     Name = var.eks-sg
   }
+
 }
