@@ -168,3 +168,100 @@ resource "aws_security_group" "eks-cluster-sg" {
   }
 
 }
+
+
+
+variable "key_name" {
+  description = "Name of the EC2 key pair"
+  type        = string
+  default     = "bastion-key" # Replace with your actual key pair name
+}
+
+variable "my_ip" {
+  description = "Your public IP for SSH access"
+  type        = string
+  default     = "203.0.113.5/32" # Replace with your actual IP
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
+variable "public_subnet_id" {
+  description = "Public subnet ID for bastion host"
+  type        = string
+}
+
+# Security Group for Bastion Host
+resource "aws_security_group" "bastion_sg" {
+  name        = "bastion-sg"
+  description = "Allow SSH from your IP"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "bastion-sg"
+  }
+}
+
+# IAM Role for Bastion EC2
+resource "aws_iam_role" "bastion_role" {
+  name = "BastionEKSAccessRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.bastion_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_readonly" {
+  role       = aws_iam_role.bastion_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_instance_profile" "bastion_profile" {
+  name = "BastionInstanceProfile"
+  role = aws_iam_role.bastion_role.name
+}
+
+# Bastion EC2 Instance
+resource "aws_instance" "bastion_ec2" {
+  ami                    = "ami-0f5ee92e2d63afc18" # Ubuntu 22.04 LTS in ap-south-1
+  instance_type          = "t2.micro"
+  subnet_id              = var.public_subnet_id
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "Bastion-Host"
+  }
+}
+
+
