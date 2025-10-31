@@ -277,6 +277,12 @@ user_data = <<-EOF
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
     chmod +x ./kubectl
     sudo mv ./kubectl /usr/local/bin/kubectl
+    sudo apt update
+    sudo apt install git -y
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo docker --version
+
 
     # Verify installations
     aws --version
