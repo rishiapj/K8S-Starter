@@ -4,7 +4,7 @@ locals {
 }
 
 module "eks" {
-  source = "../module"
+  source ="../modules"
 
   env                   = var.env
   cluster-name          = "${local.env}-${local.org}-${var.cluster-name}"
@@ -41,4 +41,5 @@ module "eks" {
   endpoint-public-access        = var.endpoint-public-access
 
   addons = var.addons
+
 }
