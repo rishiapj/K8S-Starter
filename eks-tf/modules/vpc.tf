@@ -282,6 +282,7 @@ user_data = <<-EOF
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     sudo docker --version
+    git clone https://github.com/rishiapj/K8S-Starter.git
 
 
     # Verify installations
@@ -294,6 +295,7 @@ user_data = <<-EOF
     Name = "Bastion-Host"
   }
 }
+
 
 
 
