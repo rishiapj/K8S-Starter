@@ -178,7 +178,7 @@ variable "key_name" {
 variable "my_ip" {
   description = "Your public IP for SSH access"
   type        = string
-  default     = "106.219.152.90/32" # Replace with your actual IP
+  default     = "0.0.0.0/0" # Replace with your actual IP
 }
 
 # Security Group for Bastion Host
@@ -295,6 +295,7 @@ user_data = <<-EOF
     Name = "Bastion-Host"
   }
 }
+
 
 
 
