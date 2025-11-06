@@ -3,6 +3,9 @@ kind: ServiceAccount
 metadata:
   name: aws-test
   namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::985809756777:role/eks-oidc
+
 
 ---
 apiVersion: apps/v1
@@ -25,3 +28,4 @@ spec:
         image: 985809756777.dkr.ecr.us-east-1.amazonaws.com/microservice/my-mvc-app
         ports:
         - containerPort: 80
+
