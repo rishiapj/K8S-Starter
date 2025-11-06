@@ -12,8 +12,10 @@ spec:
       labels:
         app: mvc-app
     spec:
+      serviceAccountName: aws-test
       containers:
       - name: mvc-app
         image: 985809756777.dkr.ecr.us-east-1.amazonaws.com/microservice/my-mvc-app
         ports:
+
         - containerPort: 80
