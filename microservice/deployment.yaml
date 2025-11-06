@@ -1,3 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aws-test
+  namespace: default
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,5 +24,4 @@ spec:
       - name: mvc-app
         image: 985809756777.dkr.ecr.us-east-1.amazonaws.com/microservice/my-mvc-app
         ports:
-
         - containerPort: 80
