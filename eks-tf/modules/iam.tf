@@ -97,12 +97,4 @@ resource "aws_iam_role_policy_attachment" "eks-oidc-policy-attach" {
 
 }
 
-resource "kubernetes_service_account" "aws_test" {
-  metadata {
-    name      = "aws-test"
-    namespace = "default"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.eks_oidc.arn
-    }
-  }
-}
+
