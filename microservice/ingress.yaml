@@ -14,8 +14,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              service:
-                name: mvc-app-service
-                port:
-                  number: 8088
+              serviceName: mvc-app-service
+              servicePort: 8088
+
 
