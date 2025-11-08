@@ -3,9 +3,7 @@ kind: Ingress
 metadata:
   name: mvc-app-ingress
   annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: mvc-app.example.com
@@ -14,7 +12,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: mvc-app-service
-              servicePort: 8088
-
-
+              service:
+                name: mvc-app-service
+                port:
+                  number: 80
