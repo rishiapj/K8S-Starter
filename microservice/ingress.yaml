@@ -22,3 +22,4 @@ spec:
               service:
                 name: mvc-app-service
                 port:
+                  number: 80   # 👈 must be provided, matches your Service.spec.ports[0].port
