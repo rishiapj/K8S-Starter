@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=300
     # REQUIRED for HTTPS listener on ALB (replace with your ACM cert ARN)
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:<region>:<account-id>:certificate/<uuid>
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:985809756777:certificate/58df1dbf-f4e6-439c-b364-7a8e13387c23
 spec:
   rules:
     - host: myapp.rishikeshkumar.org
@@ -23,3 +23,4 @@ spec:
                 name: mvc-app-service
                 port:
                   number: 80   # 👈 must be provided, matches your Service.spec.ports[0].port
+
